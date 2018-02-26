@@ -10,9 +10,8 @@
 %%
 %% The Original Code is RabbitMQ Message Persister.
 %%
-%% The Initial Developer of the Original Code is Erlang Solutions, Inc.
+%% The Initial Developer of the Original Code is Erlang Solutions Ltd.
 %% Copyright (c) 2007-2018 Erlang Solutions Ltd.  All rights reserved.
 %%
 
--define(TIMESTAMP_IN_MS, <<"timestamp_in_ms">>).
 -define(PERSIST_MESSAGE_DELIVERY_MODE, 2).

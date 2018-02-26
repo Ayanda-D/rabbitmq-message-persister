@@ -1,4 +1,4 @@
-# RabbitMQ Message Persistor Plugin
+# RabbitMQ Message Persister Plugin
 
 This plugin persists messages by filling the `delivery_mode` property of a
 message as it enters RabbitMQ with the protocol defined value of `2`, regardless
@@ -15,12 +15,18 @@ This plugin targets RabbitMQ 3.6.0 and later versions.
 This plugin cannot be used together with the following plugins:
 - [rabbitmq-message-timestamp](https://github.com/rabbitmq/rabbitmq-message-timestamp)
 - [rabbitmq-routing-node-stamp](https://github.com/rabbitmq/rabbitmq-routing-node-stamp)
+
 as they override the same extension point.
 
 ## Installation
 
-See [Plugin Installation](http://www.rabbitmq.com/installing-plugins.html) for details
-about how to install plugins that do not ship with RabbitMQ.
+To create a package, execute `make dist` and find the `.ez` package file in the
+`plugins` directory. Refer to the standard [RabbitMQ Plugin Installation Guide](http://www.rabbitmq.com/installing-plugins.html) for more details on
+installing plugins that do not ship with RabbitMQ by default.
+
+## Testing
+
+Clone and execute `make tests` to test the plugin. View test results from the generated HTML files.
 
 ## Building from Source
 
@@ -32,7 +38,7 @@ You can build and install it like any other plugin (see
 Just enable the plugin with the following command:
 
 ```bash
-rabbitmq-plugins enable rabbitmq_message_persistor
+rabbitmq-plugins enable rabbitmq_message_persister
 ```
 
 The plugin will then hook into the `basic.publish` process in order to
@@ -52,4 +58,6 @@ cause all AMQP 0-9-1 connections to fail when creating a new channel.
 
 ## LICENSE ##
 
-See the LICENSE file
+(c) Erlang Solutions Ltd. 2017-2018
+
+https://www.erlang-solutions.com/
