@@ -1,10 +1,14 @@
 # RabbitMQ Message Persister Plugin
 
 This plugin persists messages by filling the `delivery_mode` property of a
-message as it enters RabbitMQ with the protocol defined value of `2`, regardless
-of the what value was set/defined by the publishing client application. If
-enabled, this allows all RabbitMQ ingress messages to be marked as
+message as it enters RabbitMQ with the AMQP 0-9-1 protocol defined setting of
+`2`, regardless of the what value was set/defined by the publishing client
+application. If enabled, it allows all RabbitMQ ingress messages to be marked as
 persistent on publish entry.
+
+**NOTE:** The plugin assumes queues to which messages are destined to were
+declared as **durable**, along with **durable exchanges** if **full message**
+persistence is the desired outcome.
 
 ## Supported RabbitMQ Versions
 
@@ -26,7 +30,8 @@ installing plugins that do not ship with RabbitMQ by default.
 
 ## Testing
 
-Clone and execute `make tests` to test the plugin. View test results from the generated HTML files.
+Clone and execute `make tests` to test the plugin. View test results from the
+generated HTML files.
 
 ## Building from Source
 
@@ -52,9 +57,9 @@ every message that crosses RabbitMQ.
 
 This plugin should not be enabled at the same time as any other
 interceptors  that hook into the `basic.publish` process, such as
-the  `rabbitmq-routing-node-stamp` plugin. Enabling more than one
-interceptor that is registered to the `basic.publish` process will
-cause all AMQP 0-9-1 connections to fail when creating a new channel.
+the `rabbitmq-message-timestamp` and `rabbitmq-routing-node-stamp` plugins.
+Enabling more than one interceptor that is registered to the `basic.publish`
+process will cause all AMQP 0-9-1 connections to fail when creating a new channel.
 
 ## LICENSE ##
 

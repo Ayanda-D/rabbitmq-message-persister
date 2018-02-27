@@ -10,8 +10,8 @@
 %%
 %% The Original Code is RabbitMQ Message Persister.
 %%
-%% The Initial Developer of the Original Code is Erlang Solutions Ltd.
-%% Copyright (c) 2017-2018 Erlang Solutions Ltd.  All rights reserved.
+%% The Developer of this component is Erlang Solutions, Ltd.
+%% Copyright (c) 2007-2018 Erlang Solutions Ltd.  All rights reserved.
 %%
 
 -module(rabbit_message_persister_SUITE).
@@ -142,10 +142,6 @@ get_payload(#amqp_msg{payload = P}) ->
 
 get_message_delivery_mode(#amqp_msg{props = #'P_basic'{delivery_mode = DM}}) ->
     DM.
-
-get_single_header(Target,
-    #amqp_msg{props = #'P_basic'{headers = Headers}}) ->
-        lists:keyfind(Target, 1, Headers).
 
 setup_fabric(Chan, ExDeclare, QueueDeclare) ->
     setup_fabric(Chan, ExDeclare, QueueDeclare, <<>>).

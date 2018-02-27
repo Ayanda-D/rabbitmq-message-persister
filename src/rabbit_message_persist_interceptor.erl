@@ -10,7 +10,7 @@
 %%
 %% The Original Code is RabbitMQ Message Persister.
 %%
-%% The Initial Developer of the Original Code is Erlang Solutions Ltd.
+%% The Developer of this component is Erlang Solutions, Ltd.
 %% Copyright (c) 2007-2018 Erlang Solutions Ltd.  All rights reserved.
 %%
 
@@ -19,8 +19,6 @@
 -include_lib("rabbit_common/include/rabbit.hrl").
 -include_lib("rabbit_common/include/rabbit_framing.hrl").
 -include_lib("rabbit_message_persister.hrl").
-
--import(rabbit_basic, [header/2]).
 
 -behaviour(rabbit_channel_interceptor).
 
@@ -56,8 +54,8 @@ applies_to() ->
     ['basic.publish'].
 
 %%----------------------------------------------------------------------------
-ensure_delivery_mode_2(#content{properties = #'P_basic'{delivery_mode = 2}}
-  = Content) ->
+ensure_delivery_mode_2(#content{properties =
+  #'P_basic'{delivery_mode = ?PERSIST_MESSAGE_DELIVERY_MODE}} = Content) ->
     Content;
 
 ensure_delivery_mode_2(#content{properties = Props} = Content) ->

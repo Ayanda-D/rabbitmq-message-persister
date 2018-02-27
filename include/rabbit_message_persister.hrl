@@ -10,7 +10,7 @@
 %%
 %% The Original Code is RabbitMQ Message Persister.
 %%
-%% The Initial Developer of the Original Code is Erlang Solutions Ltd.
+%% The Developer of this component is Erlang Solutions, Ltd.
 %% Copyright (c) 2007-2018 Erlang Solutions Ltd.  All rights reserved.
 %%
 
