@@ -1,4 +1,4 @@
-# RabbitMQ Message Persister Plugin
+# RabbitMQ Message Persister
 
 This plugin persists messages by filling the `delivery_mode` property of a
 message as it enters RabbitMQ with the AMQP 0-9-1 protocol defined setting of
@@ -14,13 +14,29 @@ persistence is the desired outcome.
 
 This plugin targets RabbitMQ 3.6.0 and later versions.
 
+## Operation
+
+**Fig 1** illustrates the overview operation of the `rabbitmq-message-persister`
+plugin when in use within an active RabbitMQ instance.
+
+<p style="text-align:center"><img src="./priv/images/rabbit_message_persister.png" align="centre" height="400" width="650"></p>
+<p style="text-align:center"><b>Fig 1: RabbitMQ Message Persister Overview</b>
+</p>
+
+On reception of the `basic.publish` AMQP primitive, the `rabbitmq-message-persister`
+channel interceptor is executed, applying the necessary/specific message persisting
+primitives to the published content, prior handing it forward for further internal
+processing. Message persisting primitives are always applied regardless of the previously
+set message persisting fields in the inbound message.
+
 ## Limitations
 
 This plugin cannot be used together with the following plugins:
+
 - [rabbitmq-message-timestamp](https://github.com/rabbitmq/rabbitmq-message-timestamp)
 - [rabbitmq-routing-node-stamp](https://github.com/rabbitmq/rabbitmq-routing-node-stamp)
 
-as they override the same extension point.
+as they override the same AMQP primitive.
 
 ## Installation
 
@@ -33,35 +49,15 @@ installing plugins that do not ship with RabbitMQ by default.
 Clone and execute `make tests` to test the plugin. View test results from the
 generated HTML files.
 
-## Building from Source
+## Usage
 
-You can build and install it like any other plugin (see
-[the plugin development guide](http://www.rabbitmq.com/plugin-development.html)).
-
-## Usage ##
-
-Just enable the plugin with the following command:
+Enable the plugin with the following command:
 
 ```bash
 rabbitmq-plugins enable rabbitmq_message_persister
 ```
 
-The plugin will then hook into the `basic.publish` process in order to
-set messages as persistent from the broker's perspective.
-
-## Limitations ##
-
-The plugin hooks into the `basic.publish` path, so expect a small
-throughput reduction when using this plugin, since it has to modify
-every message that crosses RabbitMQ.
-
-This plugin should not be enabled at the same time as any other
-interceptors  that hook into the `basic.publish` process, such as
-the `rabbitmq-message-timestamp` and `rabbitmq-routing-node-stamp` plugins.
-Enabling more than one interceptor that is registered to the `basic.publish`
-process will cause all AMQP 0-9-1 connections to fail when creating a new channel.
-
-## LICENSE ##
+## LICENSE
 
 (c) Erlang Solutions Ltd. 2017-2018
 
