@@ -1,5 +1,7 @@
 # RabbitMQ Message Persister
 
+[![Build Status](https://travis-ci.org/Ayanda-D/rabbitmq-message-persister.svg?branch=master)](https://travis-ci.org/Ayanda-D/rabbitmq-message-persister)
+
 This plugin persists messages by filling the `delivery_mode` property of a
 message as it enters RabbitMQ with the AMQP 0-9-1 protocol defined setting of
 `2`, regardless of the what value was set/defined by the publishing client
