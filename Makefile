@@ -1,5 +1,6 @@
 PROJECT = rabbitmq_message_persister
 PROJECT_DESCRIPTION = RabbitMQ Message Persister
+PROJECT_MOD = rabbit_message_persist_app
 
 define PROJECT_APP_EXTRA_KEYS
 	{broker_version_requirements, []}
