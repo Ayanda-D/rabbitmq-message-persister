@@ -2,7 +2,12 @@ PROJECT = rabbitmq_message_persister
 PROJECT_DESCRIPTION = RabbitMQ Message Persister
 
 define PROJECT_APP_EXTRA_KEYS
-	{broker_version_requirements, ["3.7.0"]}
+	{broker_version_requirements, []}
+endef
+
+define PROJECT_ENV
+[
+  {persist,  true}]
 endef
 
 DEPS = rabbit_common rabbit
