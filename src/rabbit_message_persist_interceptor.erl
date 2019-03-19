@@ -48,7 +48,7 @@ description() ->
 
 intercept(#'basic.publish'{} = Method, Content, _IState) ->
     DecodedContent = rabbit_binary_parser:ensure_content_decoded(Content),
-    Content2 = ensure_delivery_mode_2(DecodedContent),
+    Content2 = set_delivery_mode(DecodedContent, get(?APP)),
     {Method, Content2};
 
 intercept(Method, Content, _VHost) ->
@@ -58,13 +58,20 @@ applies_to() ->
     ['basic.publish'].
 
 %%----------------------------------------------------------------------------
-ensure_delivery_mode_2(#content{properties =
-  #'P_basic'{delivery_mode = ?PERSIST_MESSAGE_DELIVERY_MODE}} = Content) ->
+set_delivery_mode(#content{properties =
+  #'P_basic'{delivery_mode = ?PERSIST_MESSAGE_DELIVERY_MODE}} = Content, true) ->
     Content;
 
-ensure_delivery_mode_2(#content{properties = Props} = Content) ->
+set_delivery_mode(#content{properties =
+  #'P_basic'{delivery_mode = ?NONPERSIST_MESSAGE_DELIVERY_MODE}} = Content, false) ->
+    Content;
+
+set_delivery_mode(#content{properties = Props} = Content, PersistMode) ->
     %% we need to reset properties_bin = none so the new properties
     %% get serialized when deliverying the message.
     Content#content{properties =
-      Props#'P_basic'{delivery_mode = ?PERSIST_MESSAGE_DELIVERY_MODE},
+      Props#'P_basic'{delivery_mode = to_delivery_mode(PersistMode)},
                       properties_bin = none}.
+
+to_delivery_mode(true)  -> ?PERSIST_MESSAGE_DELIVERY_MODE;
+to_delivery_mode(false) -> ?NONPERSIST_MESSAGE_DELIVERY_MODE.
