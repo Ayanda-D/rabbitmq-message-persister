@@ -14,4 +14,7 @@
 %% Copyright (c) 2007-2018 Erlang Solutions Ltd.  All rights reserved.
 %%
 
--define(PERSIST_MESSAGE_DELIVERY_MODE, 2).
+-define(PERSIST_MESSAGE_DELIVERY_MODE,    2).
+-define(NONPERSIST_MESSAGE_DELIVERY_MODE, 1).
+-define(DEFAULT_PERSISTANCE_MODE,         true).
+-define(APP,                              rabbitmq_message_persister).

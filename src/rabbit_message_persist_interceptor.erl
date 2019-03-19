@@ -35,9 +35,6 @@
                     {requires, rabbit_registry},
                     {enables, recovery}]}).
 
--define(DEFAULT_PERSISTANCE_MODE,  true).
--define(APP, rabbitmq_message_persister).
-
 init(_Ch) ->
     put(?APP, rabbit_misc:get_env(?APP, persist, ?DEFAULT_PERSISTANCE_MODE)),
     undefined.
