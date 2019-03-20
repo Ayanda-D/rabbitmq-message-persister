@@ -4,13 +4,14 @@
 
 This plugin persists or non-persists messages by filling the `delivery_mode` property of a
 message as it enters RabbitMQ with the AMQP 0-9-1 protocol defined setting of
-`2` or `1`, as configured `delivery_mode` value, regardless of the what value was
+`2` or `1`, as the configured `delivery_mode` value, regardless of the what value was
 set/defined by the publishing client application. If enabled, it allows all RabbitMQ
 ingress messages to be marked as persistent or transient on publish entry.
 
 **NOTE:** The plugin assumes queues to which messages are destined to were
 declared as **durable**, along with **durable exchanges** if **full message**
-persistence is the desired outcome.
+persistence is the desired outcome if delivery_mode is configured for persistence,
+i.e. `delivery_mode` = 2.
 
 ## Supported RabbitMQ Versions
 
@@ -30,6 +31,18 @@ channel interceptor is executed, applying the necessary/specific message persist
 primitives to the published content, prior handing it forward for further internal
 processing. Message persisting primitives are always applied regardless of the previously
 set message persisting fields in the inbound message.
+
+## Configuration
+
+The Watchdog plugin is configured in the `rabbitmq.config` or `advanced.config` files for RabbitMQ versions `3.6.x` and/or `3.7.x` respectively, as follows:
+
+```
+[{rabbitmq_message_persister,
+    [
+      {delivery_mode,  2}
+    ]
+ }].
+```
 
 ## Limitations
 
