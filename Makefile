@@ -2,14 +2,16 @@ PROJECT = rabbitmq_message_persister
 PROJECT_DESCRIPTION = RabbitMQ Message Persister
 PROJECT_MOD = rabbit_message_persist_app
 
-define PROJECT_APP_EXTRA_KEYS
-	{broker_version_requirements, []}
-endef
-
 define PROJECT_ENV
 [
-  {persist,  true}]
+  {delivery_mode,  2}]
 endef
+
+ifneq ($(RABBITMQ_VERSION),)
+define PROJECT_APP_EXTRA_KEYS
+{broker_version_requirements, ["$(RABBITMQ_VERSION)"]}
+endef
+endif
 
 DEPS = rabbit_common rabbit
 TEST_DEPS = rabbitmq_ct_helpers rabbitmq_ct_client_helpers amqp_client

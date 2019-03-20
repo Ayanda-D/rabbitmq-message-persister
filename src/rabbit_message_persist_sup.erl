@@ -11,10 +11,17 @@
 %% The Original Code is RabbitMQ Message Persister.
 %%
 %% The Developer of this component is Erlang Solutions, Ltd.
-%% Copyright (c) 2007-2018 Erlang Solutions Ltd.  All rights reserved.
+%% Copyright (c) 2007-2019 Erlang Solutions Ltd.  All rights reserved.
 %%
 
--define(PERSIST_MESSAGE_DELIVERY_MODE,    2).
--define(NONPERSIST_MESSAGE_DELIVERY_MODE, 1).
--define(DEFAULT_PERSISTANCE_MODE,         ?PERSIST_MESSAGE_DELIVERY_MODE).
--define(APP,                              rabbitmq_message_persister).
+-module(rabbit_message_persist_sup).
+-behaviour(supervisor2).
+
+-export([start_link/0, init/1]).
+
+start_link() ->
+    supervisor2:start_link({local, ?MODULE}, ?MODULE, []).
+
+init([]) ->
+    ChildSpecs = [],
+    {ok, {{one_for_one, 3, 10}, ChildSpecs}}.

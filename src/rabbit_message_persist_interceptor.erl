@@ -36,7 +36,7 @@
                     {enables, recovery}]}).
 
 init(_Ch) ->
-    put(?APP, rabbit_misc:get_env(?APP, persist, ?DEFAULT_PERSISTANCE_MODE)),
+    put(?APP, rabbit_misc:get_env(?APP, delivery_mode, ?DEFAULT_PERSISTANCE_MODE)),
     undefined.
 
 description() ->
@@ -56,19 +56,19 @@ applies_to() ->
 
 %%----------------------------------------------------------------------------
 set_delivery_mode(#content{properties =
-  #'P_basic'{delivery_mode = ?PERSIST_MESSAGE_DELIVERY_MODE}} = Content, true) ->
+  #'P_basic'{delivery_mode = ?PERSIST_MESSAGE_DELIVERY_MODE}} = Content,
+    ?PERSIST_MESSAGE_DELIVERY_MODE) ->
     Content;
 
 set_delivery_mode(#content{properties =
-  #'P_basic'{delivery_mode = ?NONPERSIST_MESSAGE_DELIVERY_MODE}} = Content, false) ->
+  #'P_basic'{delivery_mode = ?NONPERSIST_MESSAGE_DELIVERY_MODE}} = Content,
+    ?NONPERSIST_MESSAGE_DELIVERY_MODE) ->
     Content;
 
-set_delivery_mode(#content{properties = Props} = Content, PersistMode) ->
+set_delivery_mode(#content{properties = Props} = Content, DeliveryMode)
+  when is_integer(DeliveryMode) ->
     %% we need to reset properties_bin = none so the new properties
     %% get serialized when deliverying the message.
     Content#content{properties =
-      Props#'P_basic'{delivery_mode = to_delivery_mode(PersistMode)},
+      Props#'P_basic'{delivery_mode = DeliveryMode},
                       properties_bin = none}.
-
-to_delivery_mode(true)  -> ?PERSIST_MESSAGE_DELIVERY_MODE;
-to_delivery_mode(false) -> ?NONPERSIST_MESSAGE_DELIVERY_MODE.

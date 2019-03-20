@@ -24,6 +24,6 @@ start()           -> start(normal, []).
 
 stop()            -> stop([]).
 
-start(normal, []) -> 'ok'.
+start(normal, []) -> rabbit_message_persist_sup:start_link().
 
 stop(_State)      -> 'ok'.

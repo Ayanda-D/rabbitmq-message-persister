@@ -65,7 +65,10 @@ end_per_group(_, Config) ->
     Config.
 
 init_per_testcase(Testcase, Config) ->
-    rabbit_ct_helpers:testcase_started(Config, Testcase).
+    rabbit_ct_helpers:testcase_started(Config, Testcase),
+    ok = rabbit_ct_broker_helpers:rpc(Config, 0,
+      application, stop, [rabbitmq_message_persister]),
+    Config.
 
 end_per_testcase(Testcase, Config) ->
     rabbit_ct_helpers:testcase_finished(Config, Testcase).
@@ -75,7 +78,7 @@ end_per_testcase(Testcase, Config) ->
 %% -------------------------------------------------------------------
 
 message_persisted_published_for_nonpersistance_test(Config) ->
-    ok = setup_message_persister(Config, 0, true),
+    ok = setup_message_persister(Config, 0, 2),
     Chan = rabbit_ct_client_helpers:open_channel(Config, 0),
 
     Ex = <<"e1">>,
@@ -106,7 +109,7 @@ message_persisted_published_for_nonpersistance_test(Config) ->
     passed.
 
 message_persisted_published_for_persistance_test(Config) ->
-    ok = setup_message_persister(Config, 0, true),
+    ok = setup_message_persister(Config, 0, 2),
     Chan = rabbit_ct_client_helpers:open_channel(Config, 0),
 
     Ex = <<"e1">>,
@@ -137,7 +140,7 @@ message_persisted_published_for_persistance_test(Config) ->
     passed.
 
   message_nonpersisted_published_for_nonpersistance_test(Config) ->
-      ok = setup_message_persister(Config, 0, false),
+      ok = setup_message_persister(Config, 0, 1),
       Chan = rabbit_ct_client_helpers:open_channel(Config, 0),
 
       Ex = <<"e1">>,
@@ -168,7 +171,7 @@ message_persisted_published_for_persistance_test(Config) ->
       passed.
 
 message_nonpersisted_published_for_persistance_test(Config) ->
-    ok = setup_message_persister(Config, 0, false),
+    ok = setup_message_persister(Config, 0, 1),
     Chan = rabbit_ct_client_helpers:open_channel(Config, 0),
 
     Ex = <<"e1">>,
@@ -201,12 +204,12 @@ message_nonpersisted_published_for_persistance_test(Config) ->
 %% -------------------------------------------------------------------
 %% Implementation.
 %% -------------------------------------------------------------------
-setup_message_persister(Config, Node, PersistMode) ->
+setup_message_persister(Config, Node, DeliveryMode) ->
   ok = rabbit_ct_broker_helpers:rpc(Config, Node,
-         ?MODULE, init_message_persister_remote, [PersistMode]).
+         ?MODULE, init_message_persister_remote, [DeliveryMode]).
 
-init_message_persister_remote(PersistMode) ->
-  application:set_env(rabbitmq_message_persister, persist, PersistMode),
+init_message_persister_remote(DeliveryMode) ->
+  application:set_env(rabbitmq_message_persister, delivery_mode, DeliveryMode),
   ok = application:start(rabbitmq_message_persister).
 
 get_payload(#amqp_msg{payload = P}) ->
