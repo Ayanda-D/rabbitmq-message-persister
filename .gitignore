@@ -9,5 +9,6 @@
 /logs/
 /plugins/
 /xrefr
+erl_crash.dump
 
 rabbitmq_message_persister.d
