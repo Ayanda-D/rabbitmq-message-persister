@@ -33,8 +33,10 @@ all() ->
 groups() ->
     [
       {non_parallel_tests, [], [
-                                message_persisted_test,
-                                existing_message_persisted_test
+                                message_persisted_published_for_nonpersistance_test,
+                                message_persisted_published_for_persistance_test,
+                                message_nonpersisted_published_for_nonpersistance_test,
+                                message_nonpersisted_published_for_persistance_test
                                ]}
     ].
 
@@ -72,7 +74,8 @@ end_per_testcase(Testcase, Config) ->
 %% Testcases.
 %% -------------------------------------------------------------------
 
-message_persisted_test(Config) ->
+message_persisted_published_for_nonpersistance_test(Config) ->
+    ok = setup_message_persister(Config, 0, true),
     Chan = rabbit_ct_client_helpers:open_channel(Config, 0),
 
     Ex = <<"e1">>,
@@ -102,7 +105,8 @@ message_persisted_test(Config) ->
     rabbit_ct_client_helpers:close_channel(Chan),
     passed.
 
-existing_message_persisted_test(Config) ->
+message_persisted_published_for_persistance_test(Config) ->
+    ok = setup_message_persister(Config, 0, true),
     Chan = rabbit_ct_client_helpers:open_channel(Config, 0),
 
     Ex = <<"e1">>,
@@ -132,10 +136,78 @@ existing_message_persisted_test(Config) ->
     rabbit_ct_client_helpers:close_channel(Chan),
     passed.
 
+  message_nonpersisted_published_for_nonpersistance_test(Config) ->
+      ok = setup_message_persister(Config, 0, false),
+      Chan = rabbit_ct_client_helpers:open_channel(Config, 0),
+
+      Ex = <<"e1">>,
+      Q = <<"q">>,
+
+      setup_fabric(Chan, make_exchange(Ex, <<"direct">>), make_queue(Q)),
+
+      Msgs = [1, 2, 3, 4, 5],
+
+      amqp_channel:call(Chan, #'confirm.select'{}),
+
+      publish_messages(Chan, Ex, Msgs),
+
+      amqp_channel:wait_for_confirms_or_die(Chan),
+
+      {ok, Result} = consume(Chan, Q, Msgs, 5000),
+
+      [begin
+           ?assertNotEqual(get_message_delivery_mode(Msg), undefined),
+           ?assert(is_integer(get_message_delivery_mode(Msg))),
+           ?assert(get_message_delivery_mode(Msg) =:= ?NONPERSIST_MESSAGE_DELIVERY_MODE)
+       end|| Msg <- Result],
+
+      amqp_channel:call(Chan, delete_queue(Q)),
+      amqp_channel:call(Chan, delete_exchange(Ex)),
+
+      rabbit_ct_client_helpers:close_channel(Chan),
+      passed.
+
+message_nonpersisted_published_for_persistance_test(Config) ->
+    ok = setup_message_persister(Config, 0, false),
+    Chan = rabbit_ct_client_helpers:open_channel(Config, 0),
+
+    Ex = <<"e1">>,
+    Q = <<"q">>,
+
+    setup_fabric(Chan, make_exchange(Ex, <<"direct">>), make_queue(Q)),
+
+    Msgs = [1, 2, 3, 4, 5],
+
+    amqp_channel:call(Chan, #'confirm.select'{}),
+
+    publish_persisted_messages(Chan, Ex, Msgs),
+
+    amqp_channel:wait_for_confirms_or_die(Chan),
+
+    {ok, Result} = consume(Chan, Q, Msgs, 5000),
+
+    [begin
+         ?assertNotEqual(get_message_delivery_mode(Msg), undefined),
+         ?assert(is_integer(get_message_delivery_mode(Msg))),
+         ?assert(get_message_delivery_mode(Msg) =:= ?NONPERSIST_MESSAGE_DELIVERY_MODE)
+     end|| Msg <- Result],
+
+    amqp_channel:call(Chan, delete_queue(Q)),
+    amqp_channel:call(Chan, delete_exchange(Ex)),
+
+    rabbit_ct_client_helpers:close_channel(Chan),
+    passed.
 
 %% -------------------------------------------------------------------
 %% Implementation.
 %% -------------------------------------------------------------------
+setup_message_persister(Config, Node, PersistMode) ->
+  ok = rabbit_ct_broker_helpers:rpc(Config, Node,
+         ?MODULE, init_message_persister_remote, [PersistMode]).
+
+init_message_persister_remote(PersistMode) ->
+  application:set_env(rabbitmq_message_persister, persist, PersistMode),
+  ok = application:start(rabbitmq_message_persister).
 
 get_payload(#amqp_msg{payload = P}) ->
   binary_to_term(P).
