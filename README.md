@@ -34,7 +34,7 @@ set message persisting fields in the inbound message.
 
 ## Configuration
 
-The Watchdog plugin is configured in the `rabbitmq.config` or `advanced.config` files for RabbitMQ versions `3.6.x` and/or `3.7.x` respectively, as follows:
+The plugin is configured in the `rabbitmq.config` or `advanced.config` files for RabbitMQ versions `3.6.x` and/or `3.7.x` respectively, as follows:
 
 ```
 [{rabbitmq_message_persister,
