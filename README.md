@@ -2,11 +2,11 @@
 
 [![Build Status](https://travis-ci.org/Ayanda-D/rabbitmq-message-persister.svg?branch=master)](https://travis-ci.org/Ayanda-D/rabbitmq-message-persister)
 
-This plugin persists messages by filling the `delivery_mode` property of a
+This plugin persists or non-persists messages by filling the `delivery_mode` property of a
 message as it enters RabbitMQ with the AMQP 0-9-1 protocol defined setting of
-`2`, regardless of the what value was set/defined by the publishing client
-application. If enabled, it allows all RabbitMQ ingress messages to be marked as
-persistent on publish entry.
+`2` or `1`, as configured `delivery_mode` value, regardless of the what value was
+set/defined by the publishing client application. If enabled, it allows all RabbitMQ
+ingress messages to be marked as persistent or transient on publish entry.
 
 **NOTE:** The plugin assumes queues to which messages are destined to were
 declared as **durable**, along with **durable exchanges** if **full message**
