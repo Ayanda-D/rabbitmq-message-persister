@@ -25,13 +25,13 @@
 -export([description/0, intercept/3, applies_to/0, init/1]).
 
 -rabbit_boot_step({?MODULE,
-                   [{description, "message persisting interceptor"},
+                   [{description, "message delivery mode interceptor"},
                     {mfa, {rabbit_registry, register,
                            [channel_interceptor,
-                            <<"message persisting interceptor">>, ?MODULE]}},
+                            <<"message delivery mode interceptor">>, ?MODULE]}},
                     {cleanup, {rabbit_registry, unregister,
                                [channel_interceptor,
-                                <<"message persisting interceptor">>]}},
+                                <<"message delivery mode interceptor">>]}},
                     {requires, rabbit_registry},
                     {enables, recovery}]}).
 
@@ -41,7 +41,8 @@ init(_Ch) ->
 
 description() ->
     [{description,
-      <<"Ensures delivery mode is set to '2' on messages as they enter RabbitMQ">>}].
+      <<"Ensures delivery mode is set to the configured delivery_mode value on all"
+        "messages as they enter RabbitMQ">>}].
 
 intercept(#'basic.publish'{} = Method, Content, _IState) ->
     DecodedContent = rabbit_binary_parser:ensure_content_decoded(Content),
